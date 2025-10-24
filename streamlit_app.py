@@ -157,5 +157,5 @@ if st.session_state["game_started"]:
             # Keep player count and player names input state consistent
             if not key.startswith("p_name_") and key not in ["num_players", "players"]:
                 del st.session_state[key]
-        st.experimental_rerun()
+        st.rerun()
 
