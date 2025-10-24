@@ -6,10 +6,21 @@ import random
 # Load data
 # -----------------------
 @st.cache_data
+@st.cache_data
 def load_words():
     df = pd.read_csv("game_words.csv")
+
+    # Clean up column names
+    df.columns = df.columns.str.strip().str.lower()
+
+    # Validate presence of required columns
+    if not {"topic", "word"}.issubset(df.columns):
+        st.error(f"CSV must have columns named 'topic' and 'word'. Found: {df.columns.tolist()}")
+        st.stop()
+
     topics = df.groupby("topic")["word"].apply(list).to_dict()
     return topics
+
 
 topics = load_words()
 
