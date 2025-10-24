@@ -29,27 +29,84 @@ if st.button("Start Game"):
     st.success(f"Game started! Each player can scan their QR code below.")
 
     # Step 3: Generate QR for each player
-    for i, name in enumerate(player_names):
-        # Prepare individual word reveal link
-        role = "Imposter" if i == imposter_index else secret_word
+    for i, name in enumerate(st.session_state["players"]):
+        
+        # --- MODIFIED QR CODE CONTENT ---
+        if i == imposter_index:
+            # Imposter gets a descriptive message revealing only the general topic
+            role = f"You are the Imposter! 🤫\n\nImpersonate the role.\nThe topic is: {topic}"
+        else:
+            # Non-Imposter gets the secret word with a descriptive phrase
+            role = f"Your secret word is: {secret_word}"
+        # --- END MODIFIED QR CODE CONTENT ---
+        
+        # Generate QR code, encoding the full 'role' message directly
         qr_img = qrcode.make(role)
         
         buf = io.BytesIO()
         qr_img.save(buf, format="PNG")
 
-        st.subheader(name)
+        st.markdown(f"**{name}**")
         # Updated caption to explain the direct scan feature
         st.image(
             buf.getvalue(), 
-            caption="Scan QR to see your word/role instantly", 
+            caption="Scan QR code instantly to see your secret role/word.", 
             use_container_width=False
         )
+        st.markdown("---")
 
-# Step 4: Reveal page (if link scanned)
-query_params = st.query_params
-if "word" in query_params:
+if st.session_state["game_started"]:
+    # The QR code reveal is simultaneous, so we skip the sequential assignment phase.
+    # The discussion and voting phase starts immediately after the codes are scanned.
+    
+    st.subheader("💬 Discussion and Voting Phase")
+    
+    # Display the general topic for all players to see
+    st.info(f"The general topic is: **{st.session_state['topic']}**")
+
+    st.write("Discuss the topic and observe who seems suspicious. When ready, cast your vote.")
+    
+    # Voting Mechanism
+    if st.session_state["vote"] is None:
+        vote = st.selectbox(
+            "Vote for who you think is the imposter:", 
+            st.session_state["players"], 
+            key="current_vote_select"
+        )
+        
+        if st.button("🗳️ Submit Vote"):
+            st.session_state["vote"] = vote
+            st.success(f"You voted for **{vote}**. The game is now ready for the final reveal.")
+            # st.experimental_rerun() # Rerunning here can cause issues with other player states if this were multiplayer
+    else:
+        st.warning(f"Your vote for **{st.session_state['vote']}** has been recorded.")
+
+    
+    # Reveal Imposter Button
     st.markdown("---")
-    st.header(f"👋 Hi, {query_params.get('name', 'Player')}!")
-    st.subheader("Your secret word:")
-    st.markdown(f"### 🧩 **{query_params['word']}**")
-    st.info("Don't show this to anyone!")
+    if st.button("🔎 Reveal Imposter"):
+        imposter_name = st.session_state["players"][st.session_state["imposter_index"]]
+        secret_word = st.session_state["secret_word"]
+        
+        st.error(f"😈 The Imposter was **{imposter_name}**!")
+        st.info(f"The secret word everyone else was discussing was: **{secret_word}**")
+
+        # Check the recorded vote
+        if st.session_state.get("vote") == imposter_name:
+            st.balloons()
+            st.success("🎉 **Success!** The players successfully caught the imposter!")
+        elif st.session_state.get("vote") is None:
+            st.warning("🙈 **Failure.** No vote was submitted, and the imposter was revealed.")
+        else:
+            st.warning(f"🙈 **Failure.** The players voted for **{st.session_state['vote']}** but the imposter was {imposter_name}. The imposter wins!")
+
+    
+    st.markdown("---")
+    # Display a button to clear the game state
+    if st.button("🔁 Play Again"):
+        # Clear specific keys and rerun to reset the interface
+        for key in list(st.session_state.keys()):
+            # Keep player count and player names input state consistent
+            if not key.startswith("p_name_") and key not in ["num_players", "players"]:
+                del st.session_state[key]
+        st.experimental_rerun()
