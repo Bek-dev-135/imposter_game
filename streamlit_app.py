@@ -81,10 +81,26 @@ if st.session_state["game_started"]:
         else:
             # Non-Imposter gets the secret word with a descriptive phrase
             role = f"Your secret word is: {st.session_state['secret_word']}"
-        # --- END MODIFIED QR CODE CONTENT ---
+
+        # --- FIXED QR CODE SIZE ---
+        # By using qrcode.QRCode with fixed parameters (version, box_size, border),
+        # we ensure every QR code image has the exact same pixel dimensions,
+        # preventing the imposter's code from being visually larger.
+        # Version 4 is chosen to be large enough for the longer imposter message.
+        qr = qrcode.QRCode(
+            version=4, # Fixed version (33x33 modules)
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10, # Fixed pixel size for each module
+            border=4,  # Fixed border size
+        )
+        qr.add_data(role)
+        # fit=False is crucial to force the specified version
+        qr.make(fit=False) 
+
+        # Create the image from the QR code object
+        qr_img = qr.make_image(fill_color="black", back_color="white")
+        # --- END FIXED QR CODE SIZE ---
         
-        # Generate QR code, encoding the full 'role' message directly
-        qr_img = qrcode.make(role)
         
         buf = io.BytesIO()
         qr_img.save(buf, format="PNG")
