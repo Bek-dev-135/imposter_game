@@ -53,7 +53,9 @@ if st.button("🎲 Start Game"):
     st.session_state["imposter_index"] = imposter_index
     st.session_state["names"] = names
     st.session_state["assigned"] = [False] * players
-    st.experimental_rerun()
+
+    st.success("Game setup complete! Scroll down to continue ⬇️")
+
 
 # -----------------------
 # Role assignment phase
