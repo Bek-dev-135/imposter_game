@@ -32,18 +32,18 @@ if st.button("Start Game"):
     for i, name in enumerate(player_names):
         # Prepare individual word reveal link
         role = "Imposter" if i == imposter_index else secret_word
-        params = urlencode({"name": name, "word": role})
-        base_url = st.get_option("server.address") or "http://localhost:8501"
-        port = st.get_option("server.port") or "8501"
-        reveal_url = f"http://localhost:{port}?{params}"
-
-        # Generate QR code
-        qr_img = qrcode.make(reveal_url)
+        qr_img = qrcode.make(role)
+        
         buf = io.BytesIO()
         qr_img.save(buf, format="PNG")
 
         st.subheader(name)
-        st.image(buf.getvalue(), caption=f"Scan QR to see your word", use_container_width=False)
+        # Updated caption to explain the direct scan feature
+        st.image(
+            buf.getvalue(), 
+            caption="Scan QR to see your word/role instantly", 
+            use_container_width=False
+        )
 
 # Step 4: Reveal page (if link scanned)
 query_params = st.query_params
