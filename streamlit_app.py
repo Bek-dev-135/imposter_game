@@ -13,6 +13,7 @@ try:
 except FileNotFoundError:
     st.error("Error: 'game_words.csv' not found. Using fallback words.")
     words = ["Coffee", "Dog", "Laptop", "Mountain", "Telescope"] # Fallback words
+    Topic = ["Topic hidden"]
 
 st.title("🕵️ Imposter Game (Direct QR Reveal Edition)")
 
