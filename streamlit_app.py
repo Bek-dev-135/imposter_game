@@ -9,6 +9,7 @@ import io
 # NOTE: This assumes a file named 'game_words.csv' exists in the same directory.
 try:
     words = pd.read_csv("game_words.csv")["word"].tolist()
+    topics = pd.read_csv("game_words.csv")["topic"].tolist()
 except FileNotFoundError:
     st.error("Error: 'game_words.csv' not found. Using fallback words.")
     words = ["Coffee", "Dog", "Laptop", "Mountain", "Telescope"] # Fallback words
@@ -49,11 +50,17 @@ if st.button("Start Game"):
     st.session_state["vote"] = None # Reset vote
 
     # Step 2: Choose random word + imposter
+    # Pick a random secret word
     secret_word = random.choice(words)
+    
+    # Find the index of that word
+    word_index = words.index(secret_word)
+    
+    # Extract the topic using that same index
+    topic = topics[word_index]
+    
     imposter_index = random.randint(0, st.session_state["num_players"] - 1)
     
-    # Set the topic (using the word itself, framed as a generic topic for the imposter)
-    topic = secret_word
 
     st.session_state["secret_word"] = secret_word
     st.session_state["imposter_index"] = imposter_index
