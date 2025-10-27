@@ -117,7 +117,7 @@ Water,Fountain
 Laugh,Giggle
 Weapon,Harpoon
 Material,Ivory
-Puzzle,Jigsaw
+Game,Jigsaw
 Container,Kettle
 Maze,Labyrinth
 Art,Mosaic
@@ -191,6 +191,7 @@ Action,Inflate
 Object,Javelin
 Bodypart,Knuckle
 Song,Lullaby
+
 
 
 
