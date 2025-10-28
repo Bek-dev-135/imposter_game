@@ -85,7 +85,9 @@ if st.session_state["game_started"]:
         # --- MODIFIED QR CODE CONTENT (using st.session_state) ---
         if i == st.session_state["imposter_index"]:
             # Imposter gets a descriptive message revealing only the general topic
-            role = f"You are the Imposter! 🤫\n\nImpersonate the role.\nThe topic is: {st.session_state['topic']}"
+            role = f"You are the Imposter! 🤫\n\nImpersonate the role.\n"
+            #if you integrate a hint to the code add this section below to the Imposter output
+        # The topic is: {st.session_state['topic']}
         else:
             # Non-Imposter gets the secret word with a descriptive phrase
             role = f"Your secret word is: {st.session_state['secret_word']}"
@@ -134,7 +136,7 @@ if st.session_state["game_started"]:
     st.subheader("💬 Discussion and Voting Phase")
     
     # Display the general topic for all players to see
-    st.info(f"The general topic is: **{st.session_state['topic']}**")
+    # st.info(f"The general topic is: **{st.session_state['topic']}**")
 
     st.write("Discuss the topic and observe who seems suspicious. When ready, cast your vote.")
     
